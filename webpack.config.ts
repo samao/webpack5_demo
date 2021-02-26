@@ -3,7 +3,7 @@
  * @Author: idzeir
  * @Date: 2021-02-07 11:25:51
  * @Last Modified by: idzeir
- * @Last Modified time: 2021-02-26 14:00:43
+ * @Last Modified time: 2021-02-26 14:16:28
  */
 import fs from "fs";
 import path from "path";
@@ -130,9 +130,9 @@ const config: (env: { [key: string]: any }) => webpack.Configuration = (
         plugins: [
             new ConsoleLogOnBuildWebpackPlugin(),
             new CleanWebpackPlugin({ cleanStaleWebpackAssets: false }),
+            new HtmlWebpackPlugin({ title: "Development" }),
             ...(isProd
                 ? [
-                      new HtmlWebpackPlugin({ title: "Development" }),
                       new MiniCssExtractPlugin({
                           filename: "[name].[contenthash:8].css",
                       }),
@@ -173,43 +173,49 @@ const config: (env: { [key: string]: any }) => webpack.Configuration = (
                       ],
                   }),
         },
-        devServer: {
-            hot: true,
-            stats: "errors-only",
-            clientLogLevel: "silent",
-            host: "test.qi-e.tv",
-            port: 3000,
-            index: "index.html",
-            contentBase: ["public", "assets", "dist"],
-            headers: {
-                "X-SERVER": "webpack-dev-server",
-            },
-            http2: true,
-            https: {
-                key: fs.readFileSync(path.join(__dirname, "ssl", "server.key")),
-                cert: fs.readFileSync(
-                    path.join(__dirname, "ssl", "server.crt")
-                ),
-                ca: fs.readFileSync(path.join(__dirname, "ssl", "rootCa.pem")),
-            },
-            onListening(
-                server: WebpackDevServer & {
-                    listeningApp?: { address: () => { port: number } };
-                }
-            ) {
-                console.log(
-                    `服务已经启动: ${server.listeningApp?.address().port}`
-                );
-            },
-            proxy: {
-                "/api": {
-                    target: "https://live.qq.com",
-                    pathRewrite: {},
-                    secure: false,
-                    changeOrigin: true,
-                },
-            },
-        },
+        devServer: env.local
+            ? {
+                  hot: true,
+                  stats: "errors-only",
+                  clientLogLevel: "silent",
+                  host: "test.qi-e.tv",
+                  port: 3000,
+                  index: "index.html",
+                  contentBase: ["public", "assets", "dist"],
+                  headers: {
+                      "X-SERVER": "webpack-dev-server",
+                  },
+                  http2: true,
+                  https: {
+                      key: fs.readFileSync(
+                          path.join(__dirname, "ssl", "server.key")
+                      ),
+                      cert: fs.readFileSync(
+                          path.join(__dirname, "ssl", "server.crt")
+                      ),
+                      ca: fs.readFileSync(
+                          path.join(__dirname, "ssl", "rootCa.pem")
+                      ),
+                  },
+                  onListening(
+                      server: WebpackDevServer & {
+                          listeningApp?: { address: () => { port: number } };
+                      }
+                  ) {
+                      console.log(
+                          `服务已经启动: ${server.listeningApp?.address().port}`
+                      );
+                  },
+                  proxy: {
+                      "/api": {
+                          target: "https://live.qq.com",
+                          pathRewrite: {},
+                          secure: false,
+                          changeOrigin: true,
+                      },
+                  },
+              }
+            : undefined,
         performance: {
             hints: "error",
             maxEntrypointSize: outSize,

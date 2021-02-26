@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack --env NODE_ENV=production",
     "dev": "webpack --env NODE_ENV=development",
-    "start": "webpack serve --env NODE_ENV=development"
+    "start": "webpack serve --env NODE_ENV=development --env local"
   },
   "devDependencies": {
     "@babel/core": "^7.13.1",
@@ -18,7 +18,6 @@
     "@types/webpack-dev-server": "^3.11.1",
     "babel-loader": "^8.2.2",
     "clean-webpack-plugin": "^3.0.0",
-    "cross-env": "^7.0.3",
     "css-loader": "^5.0.1",
     "html-webpack-plugin": "^5.2.0",
     "mini-css-extract-plugin": "^1.3.8",
